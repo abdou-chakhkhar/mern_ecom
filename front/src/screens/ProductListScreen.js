@@ -4,7 +4,7 @@ import { Table, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { listProducts, deleteProduct } from '../actions/productActions'
+import { listProducts, deleteProduct } from '../actions/productAction'
 
 const ProductListScreen = ({ history, match }) => {
   const dispatch = useDispatch()
