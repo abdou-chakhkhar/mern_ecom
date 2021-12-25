@@ -75,9 +75,13 @@ const ProductListScreen = ({ history, match }) => {
           <h1>Products</h1>
         </Col>
         <Col className='text-right'>
-          <Button className='my-3' onClick={createProductHandler}>
-            <i className='fas fa-plus'></i> Create Product
-          </Button>
+          {/* <Button  onClick={createProductHandler}>
+          </Button> */}
+          <LinkContainer className='my-3' to={`/admin/product/create`}>
+                    <Button variant='light' className='btn-sm'>
+                      <i className='fas fa-plus'></i> Create Product
+                    </Button>
+          </LinkContainer>
         </Col>
       </Row>
       {loadingDelete && <Loader />}
