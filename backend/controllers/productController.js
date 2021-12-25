@@ -1,6 +1,8 @@
 import asyncHandler from 'express-async-handler'
 import Product from '../models/productModel.js'
 import formidable from 'formidable'
+import errorHandler from '../utils/dbErrorHandler.js'
+import fs from 'fs'
 
 
 // @desc Fetch all products
@@ -44,7 +46,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
   // @route   POST /api/products
   // @access  Private/Admin
   // const createProduct = asyncHandler(async (req, res) => {
-  //   //console.log(req.body);
+  //   console.log(req.body);
   //   // const product = new Product({
   //   //   name: 'Sample name',
   //   //   price: 0,
@@ -57,96 +59,31 @@ const deleteProduct = asyncHandler(async (req, res) => {
   //   //   description: 'Sample description',
   //   // })
 
-  //   // const product = new Product({
-  //   //   name: 'Sample name',
-  //   //   price: 0,
-  //   //   user: req.user._id,
-  //   //   image: req.body.photo,
-  //   //   brand: 'Sample brand',
-  //   //   category: 'Sample category',
-  //   //   countInStock: 0,
-  //   //   numReviews: 0,
-  //   //   description: 'Sample description',
-  //   // })
-  //   // const product = new Product({
-  //   //   user: req.user._id,
-  //   //   ...req.body
-  //   // })
-  
-  //   // const createdProduct = await product.save()
-  //   // res.status(201).json(createdProduct)
 
-  //   console.log('prodcut controller create');
-
-
-  //   let form = new formidable.IncomingForm();
-  //   console.log(form);
-  //   form.keepExtensions = true;
-  //   form.parse(req, (err, fields, files) => {
-  //     console.log(fields);
-  //       if (err) {
-  //           return res.status(400).json({
-  //               error: 'Image could not be uploaded'
-  //           });
-  //       }
-  //       // // check for all fields
-  //       // const { name, description, price, category, quantity, shipping } = fields;
-
-  //       // if (!name || !description || !price || !category || !quantity || !shipping) {
-  //       //     return res.status(400).json({
-  //       //         error: 'All fields are required'
-  //       //     });
-  //       // }
-
-  //       let product = new Product(fields);
-
-  //       // // 1kb = 1000
-  //       // // 1mb = 1000000
-
-  //       if (files.photo) {
-  //           // console.log("FILES PHOTO: ", files.photo);
-  //           if (files.photo.size > 1000000) {
-  //               return res.status(400).json({
-  //                   error: 'Image should be less than 1mb in size'
-  //               });
-  //           }
-  //           console.log('jaja');
-  //           product.photo.data = fs.readFileSync(files.photo.path);
-  //           product.photo.contentType = files.photo.type;
-  //       }
-
-  //       product.save((err, result) => {
-  //           if (err) {
-  //               console.log('PRODUCT CREATE ERROR ', err);
-  //               return res.status(400).json({
-  //                   error: errorHandler(err)
-  //               });
-  //           }
-  //           res.json(result);
-  //       });
-  //   });
     
   // })
 
-  const createProduct = (req, res) => {
+  const createProduct = asyncHandler(async (req, res) => {
+    console.log(req.user);
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
     form.parse(req, (err, fields, files) => {
+      console.log('hahahaha',files.photo.mimetype);
         if (err) {
             return res.status(400).json({
                 error: 'Image could not be uploaded'
             });
         }
         // check for all fields
-        const { name, description, price, category, quantity, shipping } = fields;
+        //const { name, description, price, category, quantity, shipping } = fields;
 
-        if (!name || !description || !price || !category || !quantity || !shipping) {
-            return res.status(400).json({
-                error: 'All fields are required'
-            });
-        }
+        // if (!name || !description || !price || !category || !quantity || !shipping) {
+        //     return res.status(400).json({
+        //         error: 'All fields are required'
+        //     });
+        // }
 
-        let product = new Product(fields);
+        let product = new Product( {user: req.user._id, ...fields} );
 
         // 1kb = 1000
         // 1mb = 1000000
@@ -158,8 +95,8 @@ const deleteProduct = asyncHandler(async (req, res) => {
                     error: 'Image should be less than 1mb in size'
                 });
             }
-            product.photo.data = fs.readFileSync(files.photo.path);
-            product.photo.contentType = files.photo.type;
+            product.photo.data = fs.readFileSync(files.photo.filepath);
+            product.photo.contentType = files.photo.mimetype;
         }
 
         product.save((err, result) => {
@@ -172,7 +109,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
             res.json(result);
         });
     });
-};
+});
   
   // @desc    Update a product
   // @route   PUT /api/products/:id

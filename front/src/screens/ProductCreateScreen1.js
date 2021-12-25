@@ -12,15 +12,52 @@ import { PRODUCT_UPDATE_RESET } from '../constants/productsConstants'
 const ProductEditScreen = ({ match, history }) => {
   const productId = match.params.id
 
-  const [name, setName] = useState('')
-  const [price, setPrice] = useState(0)
-  const [image, setImage] = useState('')
-  const [photo, setPhoto] = useState('')
-  const [brand, setBrand] = useState('')
-  const [category, setCategory] = useState('')
-  const [countInStock, setCountInStock] = useState(0)
-  const [description, setDescription] = useState('')
-  const [uploading, setUploading] = useState(false)
+  const [values, setValues] = useState({
+    name: '',
+    description: '',
+    price: '',
+    // categories: [],
+    category: '',
+    //shipping: '',
+    countInStock: '',
+    photo: '',
+    //loading: false,
+    //error: '',
+    //createdProduct: '',
+    //redirectToProfile: false,
+    brand: '',
+    uploading: false,
+    formData: new FormData()
+});
+
+
+const{
+  name,
+  description,
+  price,
+  // categories: [],
+  category,
+  //shipping: '',
+  countInStock,
+  photo,
+  //loading: false,
+  //error: '',
+  //createdProduct: '',
+  //redirectToProfile: false,
+  brand,
+  uploading,
+  formData
+} = values;
+
+  //const [name, setName] = useState('')
+  //const [price, setPrice] = useState(0)
+  //const [image, setImage] = useState('')
+  //const [photo, setPhoto] = useState('')
+  //const [brand, setBrand] = useState('')
+  //const [category, setCategory] = useState('')
+  //const [countInStock, setCountInStock] = useState(0)
+  //const [description, setDescription] = useState('')
+  //const [uploading, setUploading] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -53,57 +90,48 @@ const ProductEditScreen = ({ match, history }) => {
 //     }
 //   }, [dispatch, history, productId, product, successUpdate])
 
-  const uploadFileHandler = async (e) => {
-    const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append('image', file)
-    setUploading(true)
+  // const uploadFileHandler = async (e) => {
+  //   const file = e.target.files[0]
+  //   const formData = new FormData()
+  //   formData.append('image', file)
+  //   setUploading(true)
 
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
+  //   try {
+  //     const config = {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //     }
 
-      console.log('hiho');
-      const { data } = await axios.post('/api/upload', formData, config)
-      console.log('kkk');
-      setImage(data)
-      setUploading(false)
-    } catch (error) {
-      console.error(error)
-      setUploading(false)
-    }
-  }
+  //     console.log('hiho');
+  //     const { data } = await axios.post('/api/upload', formData, config)
+  //     console.log('kkk');
+  //     setImage(data)
+  //     setUploading(false)
+  //   } catch (error) {
+  //     console.error(error)
+  //     setUploading(false)
+  //   }
+  // }
 
 
 
-  const handleChange = name => event => {
-    const value = name === 'photo' ? event.target.files[0] : event.target.value;
-    console.log(event.target.files[0]);
-    // formData.set(name, value);
-    // setValues({ ...values, [name]: value });
-};
+
 
   const submitHandler = (e) => {
     e.preventDefault()
-    console.log('submitHandler');
+    console.log(formData);
     dispatch(
-        createProduct({
-        _id: productId,
-        name,
-        price,
-        image,
-        brand,
-        photo,
-        category,
-        description,
-        countInStock,
-      })
+        createProduct(formData)
     )
   }
 
+  const handleChange = name => event => {
+    const value = name === 'photo' ? event.target.files[0] : event.target.value;
+    // console.log(event.target.files[0]);
+    formData.set(name, value);
+    setValues({ ...values, [name]: value });
+};
 
   return (
     <>
@@ -126,7 +154,7 @@ const ProductEditScreen = ({ match, history }) => {
                 type='name'
                 placeholder='Enter name'
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={handleChange('name')}
               ></Form.Control>
             </Form.Group>
 
@@ -136,33 +164,34 @@ const ProductEditScreen = ({ match, history }) => {
                 type='number'
                 placeholder='Enter price'
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={handleChange('price')}
               ></Form.Control>
             </Form.Group>
 
             <Form.Group controlId='image'>
               <Form.Label>Image</Form.Label>
-              <Form.Control
+              {/* <Form.Control
                 type='text'
                 placeholder='Enter image url'
                 value={image}
-                onChange={(e) => setImage(e.target.value)}
-              ></Form.Control>
+                onChange={setImage(e.target.value)}
+              ></Form.Control> */}
               <Form.File
                 id='image-file'
                 label='Choose File'
                 // multiple
                 custom
-                onChange={uploadFileHandler}
+                onChange={handleChange('photo')}
               ></Form.File>
               {uploading && <Loader />}
             </Form.Group>
 
             {/* <div className="form-group">
                 <label className="btn btn-secondary">
-                    <input onChange={e => setPhoto(e.target.files[0])} type="file" name="photo" accept="image/*" />
+                    <input onChange={handleChange('photo')} type="file" name="photo" accept="image/*" />
                 </label>
             </div> */}
+
 
             <Form.Group controlId='brand'>
               <Form.Label>Brand</Form.Label>
@@ -170,7 +199,7 @@ const ProductEditScreen = ({ match, history }) => {
                 type='text'
                 placeholder='Enter brand'
                 value={brand}
-                onChange={(e) => setBrand(e.target.value)}
+                onChange={handleChange('brand')}
               ></Form.Control>
             </Form.Group>
 
@@ -180,7 +209,7 @@ const ProductEditScreen = ({ match, history }) => {
                 type='number'
                 placeholder='Enter countInStock'
                 value={countInStock}
-                onChange={(e) => setCountInStock(e.target.value)}
+                onChange={handleChange('countInStock')}
               ></Form.Control>
             </Form.Group>
 
@@ -190,7 +219,7 @@ const ProductEditScreen = ({ match, history }) => {
                 type='text'
                 placeholder='Enter category'
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={handleChange('category')}
               ></Form.Control>
             </Form.Group>
 
@@ -200,7 +229,7 @@ const ProductEditScreen = ({ match, history }) => {
                 type='text'
                 placeholder='Enter description'
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={handleChange('description')}
               ></Form.Control>
             </Form.Group>
 
