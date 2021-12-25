@@ -20,6 +20,7 @@ const LoginScreen = ({ location, history }) => {
     const redirect = location.search ? location.search.split('=')[1] : '/'
 
     useEffect(() => {
+        console.log(redirect);
         if(userInfo){
             history.push(redirect)
         }
@@ -62,7 +63,10 @@ const LoginScreen = ({ location, history }) => {
             <Row className='py-3'>
                 <Col>
                     New Customer?{' '}
-                    <Link to={redirect ? `/redirect?redirect=${redirect}` : '/register'}>
+                    {/* <Link to={redirect ? `/redirect?redirect=${redirect}` : '/register'}>
+                        Register
+                    </Link> */}
+                    <Link to={'/register'}>
                         Register
                     </Link>
                 </Col>

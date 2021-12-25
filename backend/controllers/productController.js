@@ -1,5 +1,4 @@
 import asyncHandler from 'express-async-handler'
-import ProductEditScreen from '../../front/src/screens/ProductEditScreen.js'
 import Product from '../models/productModel.js'
 
 // @desc Fetch all products
